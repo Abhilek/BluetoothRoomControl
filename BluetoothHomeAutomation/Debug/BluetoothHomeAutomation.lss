@@ -1,0 +1,198 @@
+
+BluetoothHomeAutomation.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000000b8  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000000  00800060  00800060  0000010c  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .comment      00000030  00000000  00000000  0000010c  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  0000013c  2**2
+                  CONTENTS, READONLY
+  4 .debug_aranges 00000028  00000000  00000000  00000178  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   000001b9  00000000  00000000  000001a0  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 0000010a  00000000  00000000  00000359  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   00000196  00000000  00000000  00000463  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  00000034  00000000  00000000  000005fc  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    000001b3  00000000  00000000  00000630  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    000000b9  00000000  00000000  000007e3  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 00000018  00000000  00000000  0000089c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	12 c0       	rjmp	.+36     	; 0x26 <__ctors_end>
+   2:	19 c0       	rjmp	.+50     	; 0x36 <__bad_interrupt>
+   4:	18 c0       	rjmp	.+48     	; 0x36 <__bad_interrupt>
+   6:	17 c0       	rjmp	.+46     	; 0x36 <__bad_interrupt>
+   8:	16 c0       	rjmp	.+44     	; 0x36 <__bad_interrupt>
+   a:	15 c0       	rjmp	.+42     	; 0x36 <__bad_interrupt>
+   c:	14 c0       	rjmp	.+40     	; 0x36 <__bad_interrupt>
+   e:	13 c0       	rjmp	.+38     	; 0x36 <__bad_interrupt>
+  10:	12 c0       	rjmp	.+36     	; 0x36 <__bad_interrupt>
+  12:	11 c0       	rjmp	.+34     	; 0x36 <__bad_interrupt>
+  14:	10 c0       	rjmp	.+32     	; 0x36 <__bad_interrupt>
+  16:	0f c0       	rjmp	.+30     	; 0x36 <__bad_interrupt>
+  18:	0e c0       	rjmp	.+28     	; 0x36 <__bad_interrupt>
+  1a:	0d c0       	rjmp	.+26     	; 0x36 <__bad_interrupt>
+  1c:	0c c0       	rjmp	.+24     	; 0x36 <__bad_interrupt>
+  1e:	0b c0       	rjmp	.+22     	; 0x36 <__bad_interrupt>
+  20:	0a c0       	rjmp	.+20     	; 0x36 <__bad_interrupt>
+  22:	09 c0       	rjmp	.+18     	; 0x36 <__bad_interrupt>
+  24:	08 c0       	rjmp	.+16     	; 0x36 <__bad_interrupt>
+
+00000026 <__ctors_end>:
+  26:	11 24       	eor	r1, r1
+  28:	1f be       	out	0x3f, r1	; 63
+  2a:	cf e5       	ldi	r28, 0x5F	; 95
+  2c:	d4 e0       	ldi	r29, 0x04	; 4
+  2e:	de bf       	out	0x3e, r29	; 62
+  30:	cd bf       	out	0x3d, r28	; 61
+  32:	09 d0       	rcall	.+18     	; 0x46 <main>
+  34:	3f c0       	rjmp	.+126    	; 0xb4 <_exit>
+
+00000036 <__bad_interrupt>:
+  36:	e4 cf       	rjmp	.-56     	; 0x0 <__vectors>
+
+00000038 <usart_init>:
+#define OUTPort PORTC
+#define OUTddr DDRC
+
+void usart_init(void)
+{
+	UCSRB=(1<<RXEN);
+  38:	80 e1       	ldi	r24, 0x10	; 16
+  3a:	8a b9       	out	0x0a, r24	; 10
+	UCSRC=(1<<UCSZ1)|(1<<UCSZ0)|(1<<URSEL);
+  3c:	86 e8       	ldi	r24, 0x86	; 134
+  3e:	80 bd       	out	0x20, r24	; 32
+	UBRRL=0x33;// baud rate 9600
+  40:	83 e3       	ldi	r24, 0x33	; 51
+  42:	89 b9       	out	0x09, r24	; 9
+  44:	08 95       	ret
+
+00000046 <main>:
+
+
+int main(void)
+{
+	char code;
+	OUTddr|=((1<<0)|(1<<1)|(1<<2));
+  46:	84 b3       	in	r24, 0x14	; 20
+  48:	87 60       	ori	r24, 0x07	; 7
+  4a:	84 bb       	out	0x14, r24	; 20
+	usart_init();
+  4c:	f5 df       	rcall	.-22     	; 0x38 <usart_init>
+			OUTPort^=(1<<0);
+			_delay_ms(500);
+		}
+		if(code=='b')
+		{
+			OUTPort^=(1<<1);
+  4e:	22 e0       	ldi	r18, 0x02	; 2
+		code=UDR;
+		
+		
+		if(code=='a')
+		{
+			OUTPort^=(1<<0);
+  50:	91 e0       	ldi	r25, 0x01	; 1
+			OUTPort^=(1<<1);
+			_delay_ms(500);
+		}
+		if(code=='c')
+		{
+			OUTPort^=(1<<2);
+  52:	34 e0       	ldi	r19, 0x04	; 4
+	char code;
+	OUTddr|=((1<<0)|(1<<1)|(1<<2));
+	usart_init();
+    while (1) 
+    {
+		while (! (UCSRA & (1<<RXC) ) );
+  54:	5f 9b       	sbis	0x0b, 7	; 11
+  56:	fe cf       	rjmp	.-4      	; 0x54 <main+0xe>
+		code=UDR;
+  58:	8c b1       	in	r24, 0x0c	; 12
+		
+		
+		if(code=='a')
+  5a:	81 36       	cpi	r24, 0x61	; 97
+  5c:	69 f4       	brne	.+26     	; 0x78 <main+0x32>
+		{
+			OUTPort^=(1<<0);
+  5e:	85 b3       	in	r24, 0x15	; 21
+  60:	89 27       	eor	r24, r25
+  62:	85 bb       	out	0x15, r24	; 21
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+  64:	4f ef       	ldi	r20, 0xFF	; 255
+  66:	54 e3       	ldi	r21, 0x34	; 52
+  68:	8c e0       	ldi	r24, 0x0C	; 12
+  6a:	41 50       	subi	r20, 0x01	; 1
+  6c:	50 40       	sbci	r21, 0x00	; 0
+  6e:	80 40       	sbci	r24, 0x00	; 0
+  70:	e1 f7       	brne	.-8      	; 0x6a <main+0x24>
+  72:	00 c0       	rjmp	.+0      	; 0x74 <main+0x2e>
+  74:	00 00       	nop
+  76:	ee cf       	rjmp	.-36     	; 0x54 <main+0xe>
+			_delay_ms(500);
+		}
+		if(code=='b')
+  78:	82 36       	cpi	r24, 0x62	; 98
+  7a:	69 f4       	brne	.+26     	; 0x96 <main+0x50>
+		{
+			OUTPort^=(1<<1);
+  7c:	85 b3       	in	r24, 0x15	; 21
+  7e:	82 27       	eor	r24, r18
+  80:	85 bb       	out	0x15, r24	; 21
+  82:	4f ef       	ldi	r20, 0xFF	; 255
+  84:	54 e3       	ldi	r21, 0x34	; 52
+  86:	8c e0       	ldi	r24, 0x0C	; 12
+  88:	41 50       	subi	r20, 0x01	; 1
+  8a:	50 40       	sbci	r21, 0x00	; 0
+  8c:	80 40       	sbci	r24, 0x00	; 0
+  8e:	e1 f7       	brne	.-8      	; 0x88 <main+0x42>
+  90:	00 c0       	rjmp	.+0      	; 0x92 <main+0x4c>
+  92:	00 00       	nop
+  94:	df cf       	rjmp	.-66     	; 0x54 <main+0xe>
+			_delay_ms(500);
+		}
+		if(code=='c')
+  96:	83 36       	cpi	r24, 0x63	; 99
+  98:	e9 f6       	brne	.-70     	; 0x54 <main+0xe>
+		{
+			OUTPort^=(1<<2);
+  9a:	85 b3       	in	r24, 0x15	; 21
+  9c:	83 27       	eor	r24, r19
+  9e:	85 bb       	out	0x15, r24	; 21
+  a0:	4f ef       	ldi	r20, 0xFF	; 255
+  a2:	54 e3       	ldi	r21, 0x34	; 52
+  a4:	8c e0       	ldi	r24, 0x0C	; 12
+  a6:	41 50       	subi	r20, 0x01	; 1
+  a8:	50 40       	sbci	r21, 0x00	; 0
+  aa:	80 40       	sbci	r24, 0x00	; 0
+  ac:	e1 f7       	brne	.-8      	; 0xa6 <main+0x60>
+  ae:	00 c0       	rjmp	.+0      	; 0xb0 <main+0x6a>
+  b0:	00 00       	nop
+  b2:	d0 cf       	rjmp	.-96     	; 0x54 <main+0xe>
+
+000000b4 <_exit>:
+  b4:	f8 94       	cli
+
+000000b6 <__stop_program>:
+  b6:	ff cf       	rjmp	.-2      	; 0xb6 <__stop_program>
